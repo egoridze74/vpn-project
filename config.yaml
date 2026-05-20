@@ -1,0 +1,103 @@
+database:
+  tables:
+    - users:
+        fields:
+          - ID: INTEGER PRIMARY KEY AUTOINCREMENT
+          - Username: TEXT NOT NULL UNIQUE
+          - Password: TEXT NOT NULL
+          - HashType: TEXT DEFAULT 'sha256'
+          - UserRoleID: INTEGER REFERENCES Roles(ID)
+          - Author: TEXT
+          - Created_date: TEXT NOT NULL DEFAULT (datetime('now'))
+          - Last_editor: TEXT 
+          - Last_change: TEXT NOT NULL DEFAULT (datetime('now'))
+          - Change_cnt: INTEGER
+
+    - roles:
+        fields:
+          - ID: INTEGER PRIMARY KEY AUTOINCREMENT
+          - Name: TEXT NOT NULL UNIQUE
+          - Author: TEXT
+          - Created_date: TEXT NOT NULL DEFAULT (datetime('now'))
+          - Last_editor: TEXT 
+          - Last_change: TEXT NOT NULL DEFAULT (datetime('now'))
+          - Change_cnt: INTEGER
+
+    - permissions:
+        fields:
+          - ID: INTEGER PRIMARY KEY AUTOINCREMENT
+          - Name: TEXT NOT NULL
+          - RoleID: INTEGER REFERENCES Roles(ID)
+          - Author: TEXT
+          - Created_date: TEXT NOT NULL DEFAULT (datetime('now'))
+          - Last_editor: TEXT 
+          - Last_change: TEXT NOT NULL DEFAULT (datetime('now'))
+          - Change_cnt: INTEGER
+    
+    - users_H:
+        fields:
+          - ID: INTEGER 
+          - Username: TEXT 
+          - Password: TEXT
+          - HashType: TEXT 
+          - UserRoleID: INTEGER 
+          - Author: TEXT
+          - Created_date: TEXT
+          - Last_editor: TEXT
+          - Last_change: TEXT
+          - Change_cnt: INTEGER
+
+    - roles_H:
+        fields:
+          - ID: INTEGER
+          - Name: TEXT
+          - Author: TEXT
+          - Created_date: TEXT
+          - Last_editor: TEXT 
+          - Last_change: TEXT
+          - Change_cnt: INTEGER
+
+    - permissions_H:
+        fields:
+          - ID: INTEGER
+          - Name: TEXT
+          - RoleID: INTEGER
+          - Author: TEXT
+          - Created_date: TEXT
+          - Last_editor: TEXT 
+          - Last_change: TEXT
+          - Change_cnt: INTEGER
+
+    - users_D:
+        fields:
+          - ID: INTEGER
+          - Username: TEXT
+          - Password: TEXT
+          - HashType: TEXT
+          - UserRoleID: INTEGER
+          - Author: TEXT
+          - Created_date: TEXT
+          - Last_editor: TEXT 
+          - Last_change: TEXT
+          - Change_cnt: INTEGER
+
+    - roles_D:
+        fields:
+          - ID: INTEGER
+          - Name: TEXT
+          - Author: TEXT
+          - Created_date: TEXT
+          - Last_editor: TEXT 
+          - Last_change: TEXT
+          - Change_cnt: INTEGER
+
+    - permissions_D:
+        fields:
+          - ID: INTEGER
+          - Name: TEXT
+          - RoleID: INTEGER
+          - Author: TEXT
+          - Created_date: TEXT
+          - Last_editor: TEXT 
+          - Last_change: TEXT
+          - Change_cnt: INTEGER
