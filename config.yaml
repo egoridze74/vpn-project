@@ -1,6 +1,6 @@
 database:
   tables:
-    - users:
+    - Users:
         fields:
           - ID: INTEGER PRIMARY KEY AUTOINCREMENT
           - Username: TEXT NOT NULL UNIQUE
@@ -13,7 +13,7 @@ database:
           - Last_change: TEXT NOT NULL DEFAULT (datetime('now'))
           - Change_cnt: INTEGER
 
-    - roles:
+    - Roles:
         fields:
           - ID: INTEGER PRIMARY KEY AUTOINCREMENT
           - Name: TEXT NOT NULL UNIQUE
@@ -23,7 +23,7 @@ database:
           - Last_change: TEXT NOT NULL DEFAULT (datetime('now'))
           - Change_cnt: INTEGER
 
-    - permissions:
+    - Permissions:
         fields:
           - ID: INTEGER PRIMARY KEY AUTOINCREMENT
           - Name: TEXT NOT NULL
@@ -34,7 +34,7 @@ database:
           - Last_change: TEXT NOT NULL DEFAULT (datetime('now'))
           - Change_cnt: INTEGER
     
-    - users_H:
+    - Users_H:
         fields:
           - ID: INTEGER 
           - Username: TEXT 
@@ -47,7 +47,7 @@ database:
           - Last_change: TEXT
           - Change_cnt: INTEGER
 
-    - roles_H:
+    - Roles_H:
         fields:
           - ID: INTEGER
           - Name: TEXT
@@ -57,7 +57,7 @@ database:
           - Last_change: TEXT
           - Change_cnt: INTEGER
 
-    - permissions_H:
+    - Permissions_H:
         fields:
           - ID: INTEGER
           - Name: TEXT
@@ -68,7 +68,7 @@ database:
           - Last_change: TEXT
           - Change_cnt: INTEGER
 
-    - users_D:
+    - Users_D:
         fields:
           - ID: INTEGER
           - Username: TEXT
@@ -81,7 +81,7 @@ database:
           - Last_change: TEXT
           - Change_cnt: INTEGER
 
-    - roles_D:
+    - Roles_D:
         fields:
           - ID: INTEGER
           - Name: TEXT
@@ -91,7 +91,7 @@ database:
           - Last_change: TEXT
           - Change_cnt: INTEGER
 
-    - permissions_D:
+    - Permissions_D:
         fields:
           - ID: INTEGER
           - Name: TEXT

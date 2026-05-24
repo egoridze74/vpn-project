@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>%СЛОНЯРСКИЙ ВПН%</title>
-    </head>
-
-    <body>
-        <h1>
-            {{ heading }}
-            { % if is_logged % }
-            <p> {{ message }} </p>
-            { % endif % }
-        </h1>
-    </body>
+<head>
+    <title>СЛОН ВПН</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐘</text></svg>">
+</head>
+<body>
+    <h1>{{ heading }}</h1>
+    {% if is_logged %}
+        <p>{{ message }}</p>
+    {% endif %}
+</body>
 </html>

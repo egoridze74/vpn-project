@@ -13,7 +13,7 @@ RUN dnf update -y && \
     sudo && \
     dnf clean all
 
-RUN pip3 install --no-cache-dir flask
+RUN pip3 install --no-cache-dir flask pyyaml
 
 RUN useradd -m -u 1000 -s /bin/bash dev && \
     echo "dev ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/dev

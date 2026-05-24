@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Вход - СЛОН ВПН</title>
+    <title>Регистрация - СЛОН ВПН</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐘</text></svg>">
 </head>
@@ -10,7 +10,7 @@
 <body>
     <div class="main">
         <h1>СЛОН ВПН 🐘</h1>
-        <h3>Введите свои данные</h3>
+        <h3>Создание аккаунта</h3>
 
         {% if error %}
         <div style="color: red; margin-bottom: 15px; padding: 10px; background-color: #ffe6e6; border-radius: 5px;">
@@ -18,7 +18,7 @@
         </div>
         {% endif %}
 
-        <form action="{{ url_for('login') }}" method="post">
+        <form action="{{ url_for('register') }}" method="post">
             <label for="username">
                 Username:
             </label>
@@ -32,14 +32,14 @@
 
             <div class="wrap">
                 <button type="submit">
-                    Submit
+                    Register
                 </button>
             </div>
         </form>
         
-        <p>Нет аккаунта? 
-            <a href="{{ url_for('register') }}" style="text-decoration: none; color: #4CAF50;">
-                Зарегистрироваться
+        <p>Уже есть аккаунт? 
+            <a href="{{ url_for('login') }}" style="text-decoration: none; color: #4CAF50;">
+                Вход
             </a>
         </p>
     </div>

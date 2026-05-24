@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  vpn-app:
+    build:
+      context: .
+      dockerfile: fedora40.Dockerfile
+    container_name: vpn_service
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/workspace
+      - ./data:/workspace/data  # для сохранения БД
+    environment:
+      - FLASK_APP=web/app.py
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1
+    command: >
+      bash -c "
+      python3 main.py -db /workspace/db.sqlite -s /workspace/config.yaml &&
+      cd /workspace &&
+      python3 -m web.app
+      "
+    working_dir: /workspace
+    stdin_open: true
+    tty: true

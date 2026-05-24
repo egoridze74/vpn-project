@@ -26,8 +26,19 @@ class DBO:
 
     def _get_field_values(self):
         result = {}
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
         for field in self.attributes["fields"]:
-            result[field] = getattr(self, field)
+            value = getattr(self, field)
+            
+            # Автоматически устанавливаем даты, если они None и поле для даты
+            if value is None:
+                if field == "Created_date":
+                    value = current_time
+                elif field == "Last_change":
+                    value = current_time
+            
+            result[field] = value
         return result
     
     def _insert_into_table(self, table_name, data):
