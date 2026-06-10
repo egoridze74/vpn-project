@@ -1,27 +1,44 @@
-version: '3.8'
-
 services:
-  vpn-app:
+  web:
     build:
       context: .
-      dockerfile: fedora40.Dockerfile
-    container_name: vpn_service
+      dockerfile: .devcontainers/fedora40.Dockerfile
+    container_name: vpn_web
     ports:
       - "5000:5000"
     volumes:
-      - .:/workspace
-      - ./data:/workspace/data  # для сохранения БД
+      - .:/workspaces/project
     environment:
-      - FLASK_APP=web/app.py
-      - FLASK_ENV=development
-      - FLASK_DEBUG=1
+      - PYTHONPATH=/workspaces/project
       - PYTHONUNBUFFERED=1
+    user: root
+    working_dir: /workspaces/project
+    command: python3 web/app.py
+    depends_on:
+      - vpn
+
+  vpn:
+    build:
+      context: .
+      dockerfile: .devcontainers/fedora40.Dockerfile
+    container_name: vpn_service
+    network_mode: host
+    volumes:
+      - .:/workspaces/project
+    environment:
+      - PYTHONPATH=/workspaces/project
+      - PYTHONUNBUFFERED=1
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_ADMIN
+    privileged: true
+    user: root
+    working_dir: /workspaces/project
     command: >
       bash -c "
-      python3 main.py -db /workspace/db.sqlite -s /workspace/config.yaml &&
-      cd /workspace &&
-      python3 -m web.app
+      mkdir -p /dev/net &&
+      mknod -m 666 /dev/net/tun c 10 200 2>/dev/null || true &&
+      chmod 666 /dev/net/tun &&
+      python3 vpn/vpn_server.py
       "
-    working_dir: /workspace
-    stdin_open: true
-    tty: true

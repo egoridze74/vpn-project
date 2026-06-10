@@ -1,33 +1,30 @@
 {
-  "name": "Fedora 40 Python Development",
+  "name": "fedora40-dev",
   "build": {
-    "dockerfile": "../fedora40.Dockerfile",
-    "context": ".."
+    "dockerfile": "fedora40.Dockerfile"
   },
   "runArgs": [
-    "--init",
+    "--cap-add=NET_ADMIN",
+    "--device=/dev/net/tun",
     "--privileged"
   ],
-  "settings": {
-    "terminal.integrated.defaultProfile.linux": "bash",
-    "python.defaultInterpreterPath": "/usr/bin/python3",
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true
-  },
-  "extensions": [
-    "ms-python.python",
-    "ms-python.vscode-pylance"
-  ],
-  "remoteUser": "dev",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
-  "workspaceFolder": "/workspace",
-  "postCreateCommand": "python3 --version && pip3 --version",
+  "postCreateCommand": "python3 -m pip install --user pyyaml",
   "customizations": {
     "vscode": {
-      "settings": {
-        "editor.formatOnSave": true,
-        "files.autoSave": "afterDelay"
-      }
+      "extensions": [
+        "ms-python.python"
+      ]
+    }
+  },
+  "forwardPorts": [5000, 1194],
+  "portsAttributes": {
+    "5000": {
+      "label": "Web Server",
+      "onAutoForward": "notify"
+    },
+    "1194": {
+      "label": "VPN Server",
+      "onAutoForward": "ignore"
     }
   }
 }
