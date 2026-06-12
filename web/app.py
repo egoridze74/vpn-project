@@ -5,10 +5,8 @@ from datetime import datetime
 from database.db import Database
 from models.users import Users
 
-
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
-
 db = Database("db.sqlite")
 
 def hash_password(password: str) -> str:
@@ -70,7 +68,9 @@ def mainpage():
         "main.html",
         heading="Главная 🐘",
         message=f"Привет, слон {user.Username}!",
-        is_logged=True
+        is_logged=True,
+        username=user.Username,
+        user_id=user.ID
     )
 
 @app.route("/register", methods=["GET", "POST"])
@@ -85,7 +85,6 @@ def register():
         if len(password) < 6:
             return render_template("register.html", error="Пароль должен быть минимум 6 символов")
 
-        # Используем единую функцию регистрации
         result = register_user(username, password)
         
         if result["success"]:
@@ -106,7 +105,6 @@ def login():
         if not username or not password:
             return render_template("login.html", error="Заполните логин и пароль")
 
-        # Используем единую функцию аутентификации
         result = authenticate_user(username, password)
         
         if result["success"]:
@@ -123,29 +121,6 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
-@app.route("/api/vpn/register", methods=["POST"])
-def api_vpn_register():
-    data = request.get_json()
-    username = data.get('username', '').strip()
-    password = data.get('password', '').strip()
-    
-    if not username or not password:
-        return jsonify({"error": "Заполните логин и пароль"}), 400
-    
-    if len(password) < 6:
-        return jsonify({"error": "Пароль должен быть минимум 6 символов"}), 400
-    
-    result = register_user(username, password)
-    
-    if result["success"]:
-        return jsonify({
-            "status": "ok",
-            "message": "Регистрация успешна",
-            "user_id": result["user_id"]
-        })
-    else:
-        return jsonify({"error": result["error"]}), 400
-
 @app.route("/api/vpn/auth", methods=["POST"])
 def api_vpn_auth():
     data = request.get_json()
@@ -153,94 +128,18 @@ def api_vpn_auth():
     password = data.get('password', '').strip()
     
     if not username or not password:
-        return jsonify({"error": "Заполните логин и пароль"}), 400
+        return jsonify({"status": "error", "message": "Missing credentials"}), 400
     
     result = authenticate_user(username, password)
     
     if result["success"]:
-        token = secrets.token_hex(32)
         return jsonify({
-            "status": "ok",
-            "message": "Аутентификация успешна",
-            "token": token,
-            "user_id": result["user_id"],
-            "username": username
+            "status": "authenticated",
+            "tun_ip": "10.0.0.1",
+            "message": "Connected to VPN"
         })
     else:
-        return jsonify({"error": result["error"]}), 401
-
-@app.route("/api/vpn/status", methods=["GET"])
-def api_vpn_status():
-    return jsonify({
-        "status": "running",
-        "server": "СЛОНЯРСКИЙ VPN 🐘",
-    })
-
-@app.route("/user/<int:id>")
-def get_user(id: int):
-    user = get_current_user()
-    if not user:
-        return jsonify({"error": "not authenticated"}), 401
-
-    if user.ID != id:
-        return jsonify({"error": "forbidden"}), 403
-
-    return jsonify({
-        "ID": user.ID,
-        "Username": user.Username,
-        "HashType": user.HashType,
-        "UserRoleID": user.UserRoleID,
-        "Author": user.Author,
-        "Created_date": user.Created_date,
-        "Last_editor": user.Last_editor,
-        "Last_change": user.Last_change,
-        "Change_cnt": user.Change_cnt,
-    })
-
-@app.route("/user/config")
-def user_config():
-    user = get_current_user()
-    if not user:
-        return redirect(url_for("login"))
-
-    return jsonify({
-        "ID": user.ID,
-        "Username": user.Username,
-        "UserRoleID": user.UserRoleID,
-        "HashType": user.HashType
-    })
-
-@app.route("/api/vpn/client/config")
-def vpn_client_config():
-    user = get_current_user()
-    if not user:
-        return jsonify({"error": "Unauthorized"}), 401
-    
-    return jsonify({
-        "server": "vpn.service.local",
-        "port": 1194,
-        "username": user.Username,
-        "protocol": "udp",
-        "encryption": "xor"
-    })
-
-@app.route("/api/vpn/test", methods=["POST"])
-def test_vpn_auth():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    
-    password_hash = hashlib.sha256(password.encode()).hexdigest()
-    user = db.fetchone(
-        'SELECT * FROM "Users" WHERE "Username" = ? AND "Password" = ?',
-        (username, password_hash)
-    )
-    
-    if user:
-        return jsonify({"status": "success", "message": "VPN authentication would work"})
-    else:
-        return jsonify({"status": "error", "message": "Invalid credentials"}), 401
-
+        return jsonify({"status": "error", "message": result["error"]}), 401
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=False, use_reloader=False)
+    app.run(debug=True, host='0.0.0.0', port=5000)

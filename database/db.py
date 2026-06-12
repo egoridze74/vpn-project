@@ -1,52 +1,46 @@
 import sqlite3
-from threading import Lock
+import threading
 
 class Database:
     def __init__(self, path):
         self.path = path
-        self.connection = sqlite3.connect(path)
-        self.connection.row_factory = sqlite3.Row
-        self.cursor = self.connection.cursor()
-        self.lock = Lock()
-
-    def __del__(self):
-        if hasattr(self, "connection"):
-            self.connection.close()
-
-    def create_database(self, schema: dict):
-        with self.lock:
-            for table in schema["database"]["tables"]:
-                table_name = list(table.keys())[0]
-                table_def = table[table_name]
-                fields = []
-                for field in table_def["fields"]:
-                    field_name = list(field.keys())[0]
-                    field_def = field[field_name]
-                    fields.append(f"{field_name} {field_def}")
-                req = f"CREATE TABLE IF NOT EXISTS {table_name} (\n "
-                req += ",\n ".join(fields)
-                req += "\n);"
-                print(f"Создаем таблицу с запросом: {req}")
-                self.cursor.execute(req)
-                req = ""
-            self.connection.commit()
-            print("База данных создана")
-
+        self._local = threading.local()
+    
+    def _get_connection(self):
+        if not hasattr(self._local, 'connection'):
+            self._local.connection = sqlite3.connect(self.path, check_same_thread=False)
+            self._local.connection.row_factory = sqlite3.Row
+            self._local.cursor = self._local.connection.cursor()
+        return self._local.connection
+    
+    @property
+    def connection(self):
+        return self._get_connection()
+    
+    @property
+    def cursor(self):
+        return self._get_connection().cursor()
+    
     def execute(self, query, params=()):
-        with self.lock:
-            cursor = self.connection.cursor()
-            cursor.execute(query, params)
-            self.connection.commit()
-            return cursor
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        conn.commit()
+        return cursor
         
     def fetchone(self, query, params=()):
-        with self.lock:
-            cursor = self.connection.cursor()
-            cursor.execute(query, params)
-            return cursor.fetchone()
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        return cursor.fetchone()
         
     def fetchall(self, query, params=()):
-        with self.lock:
-            cursor = self.connection.cursor()
-            cursor.execute(query, params)
-            return cursor.fetchall()
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute(query, params)
+        return cursor.fetchall()
+    
+    def close(self):
+        if hasattr(self._local, 'connection'):
+            self._local.connection.close()
+            delattr(self._local, 'connection')

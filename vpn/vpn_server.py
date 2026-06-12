@@ -4,6 +4,7 @@ import socket
 import threading
 import json
 import hashlib
+import subprocess
 
 sys.path.insert(0, '/workspaces/project')
 
@@ -67,7 +68,6 @@ class VPNServer:
         
         self.tun_fd = create_tun("tun_server")
         if self.tun_fd:
-            import subprocess
             subprocess.run(["ip", "addr", "add", "10.0.0.1/24", "dev", "tun_server"], capture_output=True)
             print("[VPN] TUN interface created")
         

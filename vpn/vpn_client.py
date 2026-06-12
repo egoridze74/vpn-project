@@ -2,6 +2,7 @@ import os
 import socket
 import json
 import threading
+import subprocess
 
 from common import xor_encrypt, create_tun, start_tunnel
 
@@ -48,7 +49,6 @@ class VPNClient:
             print("Failed to create TUN")
             return
         
-        import subprocess
         subprocess.run(["ip", "addr", "add", "10.0.0.2/24", "dev", "tun_client"], capture_output=True)
         
         print("VPN Connected")

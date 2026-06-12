@@ -3,6 +3,7 @@ import struct
 import fcntl
 import threading
 import select
+import subprocess
 
 
 TUNSETIFF = 0x400454ca
@@ -24,7 +25,6 @@ def create_tun(name):
     ifr = struct.pack('16sH', name.encode(), IFF_TUN | IFF_NO_PI)
     fcntl.ioctl(tun, TUNSETIFF, ifr)
     
-    import subprocess
     subprocess.run(["ip", "link", "set", name, "up"], capture_output=True)
     
     return tun
